@@ -105,8 +105,8 @@ class BSBIIndex:
         block_path = os.path.join(self.data_dir, block_dir_relative)
 
         td_pairs = []
-        print(f"Currently processing... {block_path}")
-        for doc_file_name in tqdm(next(os.walk(block_path))[2]):
+        # print(f"Currently processing... {block_path}")
+        for doc_file_name in next(os.walk(block_path))[2]:
             current_doc_id = self.doc_id_map[doc_file_name]
             doc_path = os.path.join(block_path, doc_file_name)
             with open(doc_path, "r") as f:
@@ -163,11 +163,16 @@ class BSBIIndex:
             Instance InvertedIndexWriter object yang merupakan hasil merging dari
             semua intermediate InvertedIndexWriter objects.
         """
-
-        # external merge sort dengan bantuan iterator di setiap file
-        # setiap saat, kita baca satu baris pada sebuah file
+        pre_value = -1
+        accumulated = []
         for value in heapq.merge(*indices):
-            merged_index.append(value[0], value[1])
+            if(value[0] != pre_value):
+                if pre_value != -1: merged_index.append(pre_value, accumulated)
+                accumulated = []
+                pre_value = value[0]
+            accumulated.extend(value[1])
+        if pre_value != "":
+            merged_index.append(pre_value, accumulated)
 
     def retrieve(self, query):
         """
@@ -200,6 +205,7 @@ class BSBIIndex:
                 if(token not in self.term_id_map): continue
                 current_postings = merged_index.get_postings_list(self.term_id_map[token])
                 lists_of_query_postings.append(current_postings)
+
         len_postings = len(lists_of_query_postings)
         if len_postings == 0: return []
         result = lists_of_query_postings[0]
@@ -222,7 +228,6 @@ class BSBIIndex:
         di setiap block dan menyimpannya ke index yang baru.
         """
         # loop untuk setiap sub-directory di dalam folder collection (setiap block)
-
         for block_dir_relative in tqdm(sorted(next(os.walk(self.data_dir))[1])):
             # print(block_dir_relative)
             td_pairs = self.parse_block(block_dir_relative)
@@ -230,7 +235,6 @@ class BSBIIndex:
             self.intermediate_indices.append(index_id)
             with InvertedIndexWriter(index_id, self.postings_encoding, directory = self.output_dir) as index:
                 self.invert_write(td_pairs, index)
-
         self.save()
 
         with InvertedIndexWriter(self.index_name, self.postings_encoding, directory = self.output_dir) as merged_index:

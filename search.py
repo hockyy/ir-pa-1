@@ -8,7 +8,8 @@ BSBI_instance = BSBIIndex(data_dir = 'collection', \
                           output_dir = 'index')
 BSBI_instance.load()
 
-queries = ["olahraga", "tumor", "hidup sehat", "dokter", "dokter kandungan"]
+# queries = ["olahraga", "tumor", "hidup sehat"]
+queries = ["olahraga sehat"]
 for query in queries:
     print("Query  : ", query)
     print("Results:")
