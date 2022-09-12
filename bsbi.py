@@ -9,7 +9,7 @@ from nltk import word_tokenize
 
 from index import InvertedIndexReader, InvertedIndexWriter
 from util import IdMap, sorted_intersect
-from compression import StandardPostings, VBEPostings
+from compression import StandardPostings, VBEPostings, EliasGammaPostings
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 from tqdm import tqdm
@@ -40,8 +40,8 @@ class BSBIIndex:
     index_name(str): Nama dari file yang berisi inverted index
     """
     def __init__(self, data_dir, output_dir, postings_encoding, index_name = "main_index"):
-        self.term_id_map = IdMap()
-        self.doc_id_map = IdMap()
+        self.term_id_map = IdMap(one_indexed=(postings_encoding == EliasGammaPostings))
+        self.doc_id_map = IdMap(one_indexed=(postings_encoding == EliasGammaPostings))
         self.data_dir = data_dir
         self.output_dir = output_dir
         self.index_name = index_name
@@ -256,8 +256,10 @@ if __name__ == "__main__":
 
     nltk.download('punkt')
 
-    BSBI_instance = BSBIIndex(data_dir = 'collection', \
-                              postings_encoding = VBEPostings, \
+    BSBI_instance = BSBIIndex(data_dir = 'collection',
+                              # postings_encoding = VBEPostings,
+                              postings_encoding = StandardPostings,
+                              # postings_encoding = EliasGammaPostings,
                               output_dir = 'index')
 
     BSBI_instance.index() # memulai indexing!

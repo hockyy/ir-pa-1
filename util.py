@@ -7,7 +7,7 @@ class IdMap:
     akan melakukan hal tersebut.
     """
 
-    def __init__(self):
+    def __init__(self, one_indexed = False):
         """
         Mapping dari string (term atau nama dokumen) ke id disimpan dalam
         python's dictionary; cukup efisien. Mapping sebaliknya disimpan dalam
@@ -22,6 +22,9 @@ class IdMap:
         """
         self.str_to_id = {}
         self.id_to_str = []
+        if(one_indexed):
+            self.str_to_id[""] = 0
+            self.id_to_str.append(0)
 
     def __len__(self):
         """Mengembalikan banyaknya term (atau dokumen) yang disimpan di IdMap."""
