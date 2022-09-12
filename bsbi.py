@@ -223,7 +223,6 @@ class BSBIIndex:
         """
         # loop untuk setiap sub-directory di dalam folder collection (setiap block)
 
-        iter = 0
         for block_dir_relative in tqdm(sorted(next(os.walk(self.data_dir))[1])):
             # print(block_dir_relative)
             td_pairs = self.parse_block(block_dir_relative)
@@ -231,8 +230,6 @@ class BSBIIndex:
             self.intermediate_indices.append(index_id)
             with InvertedIndexWriter(index_id, self.postings_encoding, directory = self.output_dir) as index:
                 self.invert_write(td_pairs, index)
-            iter += 1
-            if iter == 2: break
 
         self.save()
 
