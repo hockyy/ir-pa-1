@@ -202,17 +202,25 @@ class BSBIIndex:
 
         with InvertedIndexReader(self.index_name, self.postings_encoding, self.output_dir) as merged_index:
             for token in tokenized_query:
-                if(token not in self.term_id_map): continue
+                if token not in self.term_id_map: continue
                 current_postings = merged_index.get_postings_list(self.term_id_map[token])
                 lists_of_query_postings.append(current_postings)
-
+        # print(lists_of_query_postings)
+        # for i in lists_of_query_postings:
+        #     for j in i:
+        #         print(self.doc_id_map[j], end=" ")
+        #     print()
+        #     print()
         len_postings = len(lists_of_query_postings)
         if len_postings == 0: return []
-        result = lists_of_query_postings[0]
         lists_of_query_postings.sort(key=len)
 
+        result = lists_of_query_postings[0]
         for i in range(1, len_postings):
+            print(result, lists_of_query_postings[i])
             result = sorted_intersect(result, lists_of_query_postings[i])
+            # for tmp in result: print(tmp, self.doc_id_map[tmp])
+            # print()
 
         return [self.doc_id_map[doc_id] for doc_id in result]
 

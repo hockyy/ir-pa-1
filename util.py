@@ -87,7 +87,7 @@ def sorted_intersect(list1, list2):
             return_list.append(list1[pos1])
             pos1 += 1
             pos2 += 1
-        elif list1[pos1] < list2[pos1]:
+        elif list1[pos1] < list2[pos2]:
             pos1 += 1
         else:
             pos2 += 1

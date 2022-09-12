@@ -9,10 +9,10 @@ BSBI_instance = BSBIIndex(data_dir = 'collection', \
 BSBI_instance.load()
 
 # queries = ["olahraga", "tumor", "hidup sehat"]
-queries = ["olahraga sehat"]
+queries = ["olahraga jantung teratur sehat hidup"]
 for query in queries:
     print("Query  : ", query)
     print("Results:")
-    for doc in BSBI_instance.retrieve(query):
+    for doc in sorted(BSBI_instance.retrieve(query)):
         print(doc)
     print()
