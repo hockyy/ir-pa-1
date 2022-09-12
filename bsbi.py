@@ -255,11 +255,13 @@ class BSBIIndex:
 if __name__ == "__main__":
 
     nltk.download('punkt')
-
+    start = time.time()
     BSBI_instance = BSBIIndex(data_dir = 'collection',
                               # postings_encoding = VBEPostings,
-                              postings_encoding = StandardPostings,
-                              # postings_encoding = EliasGammaPostings,
+                              # postings_encoding = StandardPostings,
+                              postings_encoding = EliasGammaPostings,
                               output_dir = 'index')
 
     BSBI_instance.index() # memulai indexing!
+    end = time.time()
+    print(f"Indexing time: {(end-start):.5f} seconds")
