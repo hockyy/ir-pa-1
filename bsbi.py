@@ -217,7 +217,7 @@ class BSBIIndex:
 
         result = lists_of_query_postings[0]
         for i in range(1, len_postings):
-            print(result, lists_of_query_postings[i])
+            # print(result, lists_of_query_postings[i])
             result = sorted_intersect(result, lists_of_query_postings[i])
             # for tmp in result: print(tmp, self.doc_id_map[tmp])
             # print()
