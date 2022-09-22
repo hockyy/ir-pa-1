@@ -184,8 +184,12 @@ class InvertedIndexWriter(InvertedIndex):
         self.index_file.write(encoded_postings_list)
 
 if __name__ == "__main__":
+    try:
+        os.mkdir("tmp")
+    except:
+        pass
 
-    from compression import StandardPostings, VBEPostings
+    from compression import StandardPostings, VBEPostings, EliasGammaPostings
 
     with InvertedIndexWriter('test-standard', postings_encoding=StandardPostings, directory='./tmp/') as index:
         index.append(1, [2, 3, 4, 8, 10])
@@ -221,6 +225,24 @@ if __name__ == "__main__":
         assert VBEPostings.decode(index.index_file.read(index.postings_dict[1][2])) == [2, 3, 4, 8, 10], "terdapat kesalahan"
         assert VBEPostings.decode(index.index_file.read(index.postings_dict[2][2])) == [3, 4, 5], "terdapat kesalahan"
 
+    with InvertedIndexWriter('test-eliasgamma', postings_encoding=EliasGammaPostings, directory='./tmp/') as index:
+        index.append(1, [2, 3, 4, 8, 10])
+        index.append(2, [3, 4, 5])
+        index.index_file.seek(0)
+        assert index.terms == [1,2], "terms salah"
+        assert index.postings_dict == {1: (0, 5, len(EliasGammaPostings.encode([2,3,4,8,10]))),
+                                       2: (len(EliasGammaPostings.encode([2,3,4,8,10])), 3,
+                                           len(EliasGammaPostings.encode([3,4,5])))}, "postings dictionary salah"
+        assert EliasGammaPostings.decode(index.index_file.read()) == [2, 3, 4, 8, 10, 40], "penyimpanan postings pada harddisk salah"
+
+        index.index_file.seek(index.postings_dict[2][0])
+        assert EliasGammaPostings.decode(index.index_file.read(len(EliasGammaPostings.encode([3,4,5])))) == [3,4,5], "terdapat kesalahan"
+
+        index.index_file.seek(0)
+        assert EliasGammaPostings.decode(index.index_file.read(index.postings_dict[1][2])) == [2, 3, 4, 8, 10], "terdapat kesalahan"
+        assert EliasGammaPostings.decode(index.index_file.read(index.postings_dict[2][2])) == [3, 4, 5], "terdapat kesalahan"
+
+
     with InvertedIndexReader('test-standard', postings_encoding=StandardPostings, directory='./tmp/') as index:
         assert index.terms == [1,2], "terms salah"
         assert index.postings_dict == {1: (0, 5, len(StandardPostings.encode([2,3,4,8,10]))),
@@ -250,3 +272,19 @@ if __name__ == "__main__":
         assert next(index) == (1, [2,3,4,8,10])
         index.reset()
         assert next(index) == (1, [2,3,4,8,10])
+
+    with InvertedIndexReader('test-eliasgamma', postings_encoding=EliasGammaPostings, directory='./tmp/') as index:
+        assert index.terms == [1,2], "terms salah"
+        assert index.postings_dict == {1: (0, 5, len(EliasGammaPostings.encode([2,3,4,8,10]))),
+                                       2: (len(EliasGammaPostings.encode([2,3,4,8,10])), 3,
+                                           len(EliasGammaPostings.encode([3,4,5])))}, "postings dictionary salah"
+        assert index.get_postings_list(2) == [3, 4, 5]
+        assert index.get_postings_list(1) == [2, 3, 4, 8, 10]
+        index.reset()
+        assert next(index) == (1, [2,3,4,8,10])
+        assert next(index) == (2, [3,4,5])
+        index.reset()
+        assert next(index) == (1, [2,3,4,8,10])
+        index.reset()
+        assert next(index) == (1, [2,3,4,8,10])
+

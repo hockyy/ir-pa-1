@@ -1,3 +1,36 @@
+## Cara Menjalankan
+
+Buat folder tmp, dan virtual environment, dan install requirements untuk mac dan gnu/linux:
+
+```bash
+mkdir tmp
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
+
+Untuk windows:
+
+```bash
+mkdir tmp
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+atau:
+
+```bash
+mkdir tmp
+virtualenv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Kalau yang windows venvnya salah commandnya, bisa di browsing kak hehe saya ga pake windows soalnya maaf kak :pray: 
+
+Selanjutnya jalankan bsbi.py
+
 ## Bonus Compression Elias-Gamma
 
 Coding $\gamma$ untuk suatu bilangan bulat positif $k$ terdiri dari dua komponen:

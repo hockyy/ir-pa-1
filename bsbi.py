@@ -253,7 +253,10 @@ class BSBIIndex:
 
 
 if __name__ == "__main__":
-
+    try:
+        os.mkdir("index")
+    except:
+        pass
     nltk.download('punkt')
     start = time.time()
     BSBI_instance = BSBIIndex(data_dir = 'collection',
